@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project_app/categories.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'devices.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -14,9 +16,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
+  Future<CategoryResponse> fetchCategory() async {
+    final response = await http.get(Uri.parse(
+        'https://api.rawg.io/api/genres?key=6c8d73cb5f7247d099a197b7f589d25f&page=1&page_size=6'));
+
+    if (response.statusCode == 200) {
+      final category_response =
+          CategoryResponse.fromJson(jsonDecode(response.body));
+      // log(category_response.results.toString());
+      return category_response;
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  }
+
   late Animation<double> animation;
   late AnimationController controller;
   late final Animation<AlignmentGeometry> alignAnimation;
+  late Future<CategoryResponse> futureCategories;
 
   @override
   void dispose() {
@@ -27,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void initState() {
     super.initState();
+    futureCategories = fetchCategory();
     controller = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -110,42 +128,42 @@ class _MyHomePageState extends State<MyHomePage>
                   );
                 },
               ),
-              ListTile(
-                leading: const Icon(
-                  Icons.bookmark,
-                  color: Colors.grey,
-                ),
-                title: const Text('Favourites',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.history,
-                  color: Colors.grey,
-                ),
-                title: const Text('History',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.settings,
-                  color: Colors.grey,
-                ),
-                title: const Text('Settings',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {},
-              ),
+              // ListTile(
+              //   leading: const Icon(
+              //     Icons.bookmark,
+              //     color: Colors.grey,
+              //   ),
+              //   title: const Text('Favourites',
+              //       style: TextStyle(
+              //           color: Colors.grey,
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w600)),
+              //   onTap: () {},
+              // ),
+              // ListTile(
+              //   leading: const Icon(
+              //     Icons.history,
+              //     color: Colors.grey,
+              //   ),
+              //   title: const Text('History',
+              //       style: TextStyle(
+              //           color: Colors.grey,
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w600)),
+              //   onTap: () {},
+              // ),
+              // ListTile(
+              //   leading: const Icon(
+              //     Icons.settings,
+              //     color: Colors.grey,
+              //   ),
+              //   title: const Text('Settings',
+              //       style: TextStyle(
+              //           color: Colors.grey,
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w600)),
+              //   onTap: () {},
+              // ),
             ],
           ),
         )),
@@ -206,70 +224,6 @@ class _MyHomePageState extends State<MyHomePage>
                                                   padding:
                                                       EdgeInsets.only(left: 0),
                                                   child: ElevatedButton(
-                                                      onPressed: () {},
-                                                      child: Text(
-                                                        'Competitive',
-                                                        style: TextStyle(
-                                                            fontSize: 12),
-                                                      ),
-                                                      style: ButtonStyle(
-                                                          fixedSize:
-                                                              MaterialStateProperty
-                                                                  .all(const Size(
-                                                                      115, 40)),
-                                                          backgroundColor:
-                                                              MaterialStatePropertyAll<
-                                                                      Color>(
-                                                                  Color.fromARGB(
-                                                                      175,
-                                                                      55,
-                                                                      73,
-                                                                      87)),
-                                                          shape: MaterialStateProperty.all<
-                                                                  RoundedRectangleBorder>(
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20.0),
-                                                          )))),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 18),
-                                                  child: ElevatedButton(
-                                                      onPressed: () {},
-                                                      child: Text(
-                                                        'FPS',
-                                                        style: TextStyle(
-                                                            fontSize: 12),
-                                                      ),
-                                                      style: ButtonStyle(
-                                                          fixedSize:
-                                                              MaterialStateProperty
-                                                                  .all(const Size(
-                                                                      115, 40)),
-                                                          backgroundColor:
-                                                              MaterialStatePropertyAll<
-                                                                      Color>(
-                                                                  Color.fromARGB(
-                                                                      175,
-                                                                      55,
-                                                                      73,
-                                                                      87)),
-                                                          shape: MaterialStateProperty.all<
-                                                                  RoundedRectangleBorder>(
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        20.0),
-                                                          )))),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 18),
-                                                  child: ElevatedButton(
                                                       onPressed: () {
                                                         Navigator.of(context)
                                                             .push(
@@ -307,9 +261,204 @@ class _MyHomePageState extends State<MyHomePage>
                                                                         20.0),
                                                           )))),
                                                 ),
+                                                Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 18),
+                                                  child: ElevatedButton(
+                                                      onPressed: () {},
+                                                      child: Text(
+                                                        'Games',
+                                                        style: TextStyle(
+                                                            fontSize: 12),
+                                                      ),
+                                                      style: ButtonStyle(
+                                                          fixedSize:
+                                                              MaterialStateProperty
+                                                                  .all(const Size(
+                                                                      115, 40)),
+                                                          backgroundColor:
+                                                              MaterialStatePropertyAll<
+                                                                      Color>(
+                                                                  Color.fromARGB(
+                                                                      175,
+                                                                      55,
+                                                                      73,
+                                                                      87)),
+                                                          shape: MaterialStateProperty.all<
+                                                                  RoundedRectangleBorder>(
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20.0),
+                                                          )))),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 18),
+                                                  child: ElevatedButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .push(
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                CategoriesPage(
+                                                              title:
+                                                                  "Categories",
+                                                            ),
+                                                          ),
+                                                        );
+                                                      },
+                                                      child: Text(
+                                                        'More',
+                                                        style: TextStyle(
+                                                            fontSize: 12),
+                                                      ),
+                                                      style: ButtonStyle(
+                                                          fixedSize:
+                                                              MaterialStateProperty
+                                                                  .all(const Size(
+                                                                      115, 40)),
+                                                          backgroundColor:
+                                                              MaterialStatePropertyAll<
+                                                                      Color>(
+                                                                  Color.fromARGB(
+                                                                      175,
+                                                                      55,
+                                                                      73,
+                                                                      87)),
+                                                          shape: MaterialStateProperty.all<
+                                                                  RoundedRectangleBorder>(
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20.0),
+                                                          )))),
+                                                ),
                                               ]),
                                         ),
                                       ),
+                                      // FutureBuilder<CategoryResponse>(
+                                      //     future: fetchCategory(),
+                                      //     builder: (context, snapshot) {
+                                      //       try {
+                                      //         var rand_color = getRandomColor();
+                                      //         if (snapshot.hasData) {
+                                      //           // If the data is available, display it
+                                      //           return ListView.builder(
+                                      //             itemCount: snapshot
+                                      //                 .data!.results.length,
+                                      //             itemBuilder:
+                                      //                 (context, index) {
+                                      //               return AnimationConfiguration
+                                      //                   .staggeredList(
+                                      //                       position: index,
+                                      //                       duration:
+                                      //                           const Duration(
+                                      //                               milliseconds:
+                                      //                                   375),
+                                      //                       child: SlideAnimation(
+                                      //                           verticalOffset: 100.0,
+                                      //                           child: FadeInAnimation(
+                                      //                               child: ListTile(
+                                      //                             title:
+                                      //                                 InkWell(
+                                      //                               onTap: () {
+                                      //                                 print(
+                                      //                                     "Category pressed");
+                                      //                               },
+                                      //                               borderRadius:
+                                      //                                   BorderRadius.circular(
+                                      //                                       25),
+                                      //                               child:
+                                      //                                   Container(
+                                      //                                           width:
+                                      //                                               380,
+                                      //                                           height:
+                                      //                                               150,
+                                      //                                           decoration:
+                                      //                                               BoxDecoration(
+                                      //                                             gradient: LinearGradient(
+                                      //                                               colors: [
+                                      //                                                 Color.fromARGB(0, 255, 172, 64),
+                                      //                                                 rand_color = getRandomColor(),
+                                      //                                               ],
+                                      //                                               begin: Alignment.topCenter,
+                                      //                                               end: Alignment.bottomCenter,
+                                      //                                             ),
+                                      //                                           ),
+                                      //                                           child:
+                                      //                                               Card(
+                                      //                                             semanticContainer: true,
+                                      //                                             clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      //                                             child: Image.network(
+                                      //                                               snapshot.data!.results[index]['image_background'],
+                                      //                                               fit: BoxFit.cover,
+                                      //                                             ),
+                                      //                                             shape: RoundedRectangleBorder(
+                                      //                                               borderRadius: BorderRadius.circular(25),
+                                      //                                             ),
+                                      //                                           ))
+                                      //                                       .blurred(
+                                      //                                           blur: 0.5,
+                                      //                                           blurColor: rand_color,
+                                      //                                           colorOpacity: 0.1,
+                                      //                                           borderRadius: BorderRadius.circular(25),
+                                      //                                           overlay: Align(
+                                      //                                             alignment: Alignment.bottomCenter,
+                                      //                                             child: Padding(
+                                      //                                               padding: EdgeInsets.only(bottom: 12),
+                                      //                                               child: Text(snapshot.data!.results[index]['name'],
+                                      //                                                   style: TextStyle(
+                                      //                                                     color: Colors.white,
+                                      //                                                     fontSize: 22,
+                                      //                                                     fontWeight: FontWeight.w600,
+                                      //                                                   )),
+                                      //                                             ),
+                                      //                                           )),
+                                      //                             ),
+                                      //                           ))));
+                                      //             },
+                                      //           );
+                                      //         } else if (snapshot.hasError) {
+                                      //           // If there is an error, display it
+                                      //           return Center(
+                                      //               child: Text(
+                                      //                   '${snapshot.error}'));
+                                      //         } else {
+                                      //           // Otherwise, show a loading indicator
+                                      //           return Center(
+                                      //               child:
+                                      //                   CircularProgressIndicator());
+                                      //         }
+                                      //       } catch (e) {
+                                      //         // Catch and handle the error
+                                      //         print(
+                                      //             e); // Print the error to the console
+                                      //         // Show an alert dialog with the error message
+                                      //         showDialog(
+                                      //           context: context,
+                                      //           builder: (context) =>
+                                      //               AlertDialog(
+                                      //             title:
+                                      //                 Text('An error occurred'),
+                                      //             content: Text(e.toString()),
+                                      //             actions: [
+                                      //               TextButton(
+                                      //                 onPressed: () =>
+                                      //                     Navigator.pop(
+                                      //                         context),
+                                      //                 child: Text('OK'),
+                                      //               ),
+                                      //             ],
+                                      //           ),
+                                      //         );
+                                      //         return Center(
+                                      //             child:
+                                      //                 CircularProgressIndicator());
+                                      //       }
+                                      //     }),
                                       Padding(
                                         padding: EdgeInsets.only(top: 17),
                                         child: SingleChildScrollView(

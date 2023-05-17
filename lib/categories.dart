@@ -6,9 +6,11 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'dart:math';
 
 class CategoryResponse {
   final int count;
+
   final List<dynamic> results;
 
   const CategoryResponse({
@@ -62,28 +64,37 @@ class CategoriesPage extends StatefulWidget {
   State<CategoriesPage> createState() => _CategoriesPageState();
 }
 
-Future<CategoryResponse> fetchCategory() async {
-  final response = await http.get(Uri.parse(
-      'https://api.rawg.io/api/genres?key=6c8d73cb5f7247d099a197b7f589d25f&page=1&page_size=10'));
-
-  if (response.statusCode == 200) {
-    final category_response =
-        CategoryResponse.fromJson(jsonDecode(response.body));
-    log(category_response.results.toString());
-    return category_response;
-  } else {
-    throw Exception('Failed to load categories');
-  }
+Color getRandomColor() {
+  final random = Random();
+  return Color.fromARGB(
+    255,
+    random.nextInt(256),
+    random.nextInt(256),
+    random.nextInt(256),
+  );
 }
 
 class _CategoriesPageState extends State<CategoriesPage>
     with SingleTickerProviderStateMixin {
+  Future<CategoryResponse> fetchCategory() async {
+    final response = await http.get(Uri.parse(
+        'https://api.rawg.io/api/genres?key=6c8d73cb5f7247d099a197b7f589d25f&page=1&page_size=10'));
+
+    if (response.statusCode == 200) {
+      final category_response =
+          CategoryResponse.fromJson(jsonDecode(response.body));
+      // log(category_response.results.toString());
+      return category_response;
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  }
+
   late Animation<double> animation;
   late AnimationController controller;
   late final Animation<AlignmentGeometry> alignAnimation;
 
   late Future<CategoryResponse> futureCategories;
-  late List<Category> listCategories;
 
   @override
   void initState() {
@@ -179,511 +190,142 @@ class _CategoriesPageState extends State<CategoriesPage>
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                leading: const Icon(
-                  Icons.bookmark,
-                  color: Colors.grey,
-                ),
-                title: const Text('Favourites',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.history,
-                  color: Colors.grey,
-                ),
-                title: const Text('History',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.settings,
-                  color: Colors.grey,
-                ),
-                title: const Text('Settings',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {},
-              ),
+              // ListTile(
+              //   leading: const Icon(
+              //     Icons.bookmark,
+              //     color: Colors.grey,
+              //   ),
+              //   title: const Text('Favourites',
+              //       style: TextStyle(
+              //           color: Colors.grey,
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w600)),
+              //   onTap: () {},
+              // ),
+              // ListTile(
+              //   leading: const Icon(
+              //     Icons.history,
+              //     color: Colors.grey,
+              //   ),
+              //   title: const Text('History',
+              //       style: TextStyle(
+              //           color: Colors.grey,
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w600)),
+              //   onTap: () {},
+              // ),
+              // ListTile(
+              //   leading: const Icon(
+              //     Icons.settings,
+              //     color: Colors.grey,
+              //   ),
+              //   title: const Text('Settings',
+              //       style: TextStyle(
+              //           color: Colors.grey,
+              //           fontSize: 16,
+              //           fontWeight: FontWeight.w600)),
+              //   onTap: () {},
+              // ),
             ],
           ),
         )),
-        body: AnimationLimiter(
-          child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return AnimationConfiguration.staggeredList(
-                position: index,
-                duration: const Duration(milliseconds: 375),
-                child: SlideAnimation(
-                  verticalOffset: 100.0,
-                  child: FadeInAnimation(
-                    child: SingleChildScrollView(
-                      child: Center(
-                        // Center is a layout widget. It takes a single child and positions it
-                        // in the middle of the parent.
-                        child: Container(
-                          // Column is also a layout widget. It takes a list of children and
-                          // arranges them vertically. By default, it sizes itself to fit its
-                          // children horizontally, and tries to be as tall as its parent.
-                          //
-                          // Invoke "debug painting" (press "p" in the console, choose the
-                          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-                          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-                          // to see the wireframe for each widget.
-                          //
-                          // Column has various properties to control how it sizes itself and
-                          // how it positions its children. Here we use mainAxisAlignment to
-                          // center the children vertically; the main axis here is the vertical
-                          // axis because Columns are vertical (the cross axis would be
-                          // horizontal).
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                Color(0xFF131416),
-                                Color(0xFF131416),
-                              ],
-                                  stops: [
-                                0,
-                                0.25
-                              ])),
-                          child: Align(
-                              alignment: Alignment.topRight,
-                              child: Padding(
-                                  padding: EdgeInsets.only(left: 18),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            top: 17, bottom: 10),
-                                        child: SingleChildScrollView(
-                                            scrollDirection: Axis.horizontal,
-                                            child: Row(children: [
-                                              Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 0),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      print("Category pressed");
-                                                    },
-                                                    child: Container(
-                                                        width: 115,
-                                                        height: 115,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            colors: [
-                                                              Color.fromARGB(0,
-                                                                  255, 172, 64),
-                                                              Colors.red,
-                                                            ],
-                                                            begin: Alignment
-                                                                .topCenter,
-                                                            end: Alignment
-                                                                .bottomCenter,
-                                                          ),
-                                                        ),
-                                                        child: Card(
-                                                          semanticContainer:
-                                                              true,
-                                                          clipBehavior: Clip
-                                                              .antiAliasWithSaveLayer,
-                                                          child: Image.network(
-                                                            'https://media.rawg.io/media/games/9dd/9ddabb34840ea9227556670606cf8ea3.jpg',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        25),
-                                                          ),
-                                                        )).blurred(
-                                                        blur: 0.5,
-                                                        blurColor: Colors.red,
-                                                        colorOpacity: 0.1,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(25),
-                                                        overlay: Align(
-                                                          alignment: Alignment
-                                                              .bottomCenter,
-                                                          child: Padding(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    bottom: 12),
-                                                            child: Text(
-                                                              "Indie",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                            ),
-                                                          ),
-                                                        )),
-                                                  )),
-                                              Padding(
-                                                  padding:
-                                                      EdgeInsets.only(left: 18),
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      print("Category pressed");
-                                                    },
-                                                    child: Container(
-                                                        width: 115,
-                                                        height: 115,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          gradient:
-                                                              LinearGradient(
-                                                            colors: [
-                                                              Color.fromARGB(0,
-                                                                  255, 172, 64),
-                                                              Colors.green,
-                                                            ],
-                                                            begin: Alignment
-                                                                .topCenter,
-                                                            end: Alignment
-                                                                .bottomCenter,
-                                                          ),
-                                                        ),
-                                                        child: Card(
-                                                          semanticContainer:
-                                                              true,
-                                                          clipBehavior: Clip
-                                                              .antiAliasWithSaveLayer,
-                                                          child: Image.network(
-                                                            'https://media.rawg.io/media/games/0bd/0bd5646a3d8ee0ac3314bced91ea306d.jpg',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        25),
-                                                          ),
-                                                        )).blurred(
-                                                        blur: 0.5,
-                                                        blurColor: Colors.green,
-                                                        colorOpacity: 0.2,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(25),
-                                                        overlay: Align(
-                                                          alignment: Alignment
-                                                              .bottomCenter,
-                                                          child: Padding(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    bottom: 12),
-                                                            child: Text(
-                                                              "Strategy",
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  fontSize: 16,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                            ),
-                                                          ),
-                                                        )),
-                                                  )),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 18),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    print("Category pressed");
-                                                  },
-                                                  child: Container(
-                                                      width: 115,
-                                                      height: 115,
-                                                      decoration: BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Color.fromARGB(0,
-                                                                255, 172, 64),
-                                                            Colors.yellow,
-                                                          ],
-                                                          begin: Alignment
-                                                              .topCenter,
-                                                          end: Alignment
-                                                              .bottomCenter,
-                                                        ),
-                                                      ),
-                                                      child: Card(
-                                                        semanticContainer: true,
-                                                        clipBehavior: Clip
-                                                            .antiAliasWithSaveLayer,
-                                                        child: Image.network(
-                                                          'https://media.rawg.io/media/games/c6b/c6bfece1daf8d06bc0a60632ac78e5bf.jpg',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(25),
-                                                        ),
-                                                      )).blurred(
-                                                      blur: 0.5,
-                                                      blurColor: Colors.yellow,
-                                                      colorOpacity: 0.1,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25),
-                                                      overlay: Align(
-                                                        alignment: Alignment
-                                                            .bottomCenter,
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  bottom: 12),
-                                                          child: Text(
-                                                            "RPG",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                          ),
-                                                        ),
-                                                      )),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 18),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    print("Category pressed");
-                                                  },
-                                                  child: Container(
-                                                      width: 115,
-                                                      height: 115,
-                                                      decoration: BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Color.fromARGB(0,
-                                                                255, 172, 64),
-                                                            Colors.blue,
-                                                          ],
-                                                          begin: Alignment
-                                                              .topCenter,
-                                                          end: Alignment
-                                                              .bottomCenter,
-                                                        ),
-                                                      ),
-                                                      child: Card(
-                                                        semanticContainer: true,
-                                                        clipBehavior: Clip
-                                                            .antiAliasWithSaveLayer,
-                                                        child: Image.network(
-                                                          'https://media.rawg.io/media/games/66e/66e90c9d7b9a17335b310ceb294e9365.jpg',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(25),
-                                                        ),
-                                                      )).blurred(
-                                                      blur: 0.5,
-                                                      blurColor: Colors.blue,
-                                                      colorOpacity: 0.1,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25),
-                                                      overlay: Align(
-                                                        alignment: Alignment
-                                                            .bottomCenter,
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  bottom: 12),
-                                                          child: Text(
-                                                            "Casual",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                          ),
-                                                        ),
-                                                      )),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 18),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    print("Category pressed");
-                                                  },
-                                                  child: Container(
-                                                      width: 115,
-                                                      height: 115,
-                                                      decoration: BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Color.fromARGB(0,
-                                                                255, 172, 64),
-                                                            Colors.orange,
-                                                          ],
-                                                          begin: Alignment
-                                                              .topCenter,
-                                                          end: Alignment
-                                                              .bottomCenter,
-                                                        ),
-                                                      ),
-                                                      child: Card(
-                                                        semanticContainer: true,
-                                                        clipBehavior: Clip
-                                                            .antiAliasWithSaveLayer,
-                                                        child: Image.network(
-                                                          'https://media.rawg.io/media/games/e0f/e0f05a97ff926acf4c8f43e0849b6832.jpg',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(25),
-                                                        ),
-                                                      )).blurred(
-                                                      blur: 0.5,
-                                                      blurColor: Colors.orange,
-                                                      colorOpacity: 0.1,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25),
-                                                      overlay: Align(
-                                                        alignment: Alignment
-                                                            .bottomCenter,
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  bottom: 12),
-                                                          child: Text(
-                                                            "Arcade",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                          ),
-                                                        ),
-                                                      )),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 18),
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    print("Category pressed");
-                                                  },
-                                                  child: Container(
-                                                      width: 115,
-                                                      height: 115,
-                                                      decoration: BoxDecoration(
-                                                        gradient:
-                                                            LinearGradient(
-                                                          colors: [
-                                                            Color.fromARGB(0,
-                                                                255, 172, 64),
-                                                            Colors.purple,
-                                                          ],
-                                                          begin: Alignment
-                                                              .topCenter,
-                                                          end: Alignment
-                                                              .bottomCenter,
-                                                        ),
-                                                      ),
-                                                      child: Card(
-                                                        semanticContainer: true,
-                                                        clipBehavior: Clip
-                                                            .antiAliasWithSaveLayer,
-                                                        child: Image.network(
-                                                          'https://media.rawg.io/media/games/283/283e7e600366b0da7021883d27159b27.jpg',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(25),
-                                                        ),
-                                                      )).blurred(
-                                                      blur: 0.5,
-                                                      blurColor: Colors.purple,
-                                                      colorOpacity: 0.1,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              25),
-                                                      overlay: Align(
-                                                        alignment: Alignment
-                                                            .bottomCenter,
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                  bottom: 12),
-                                                          child: Text(
-                                                            "Simulation",
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600),
-                                                          ),
-                                                        ),
-                                                      )),
-                                                ),
-                                              ),
-                                            ])),
+        body: FutureBuilder<CategoryResponse>(
+            future: fetchCategory(),
+            builder: (context, snapshot) {
+              try {
+                var rand_color = getRandomColor();
+                if (snapshot.hasData) {
+                  // If the data is available, display it
+                  return ListView.builder(
+                    itemCount: snapshot.data!.results.length,
+                    itemBuilder: (context, index) {
+                      return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 375),
+                          child: SlideAnimation(
+                              verticalOffset: 100.0,
+                              child: FadeInAnimation(
+                                  child: ListTile(
+                                title: InkWell(
+                                  onTap: () {
+                                    print("Category pressed");
+                                  },
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Container(
+                                      width: 380,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            Color.fromARGB(0, 255, 172, 64),
+                                            rand_color = getRandomColor(),
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
                                       ),
-                                    ],
-                                  ))),
-                        ),
+                                      child: Card(
+                                        semanticContainer: true,
+                                        clipBehavior:
+                                            Clip.antiAliasWithSaveLayer,
+                                        child: Image.network(
+                                          snapshot.data!.results[index]
+                                              ['image_background'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                      )).blurred(
+                                      blur: 0.5,
+                                      blurColor: rand_color,
+                                      colorOpacity: 0.1,
+                                      borderRadius: BorderRadius.circular(25),
+                                      overlay: Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: Padding(
+                                          padding: EdgeInsets.only(bottom: 12),
+                                          child: Text(
+                                              snapshot.data!.results[index]
+                                                  ['name'],
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w600,
+                                              )),
+                                        ),
+                                      )),
+                                ),
+                              ))));
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  // If there is an error, display it
+                  return Center(child: Text('${snapshot.error}'));
+                } else {
+                  // Otherwise, show a loading indicator
+                  return Center(child: CircularProgressIndicator());
+                }
+              } catch (e) {
+                // Catch and handle the error
+                print(e); // Print the error to the console
+                // Show an alert dialog with the error message
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('An error occurred'),
+                    content: Text(e.toString()),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('OK'),
                       ),
-                    ),
+                    ],
                   ),
-                ),
-              );
-            },
-          ),
-        ));
+                );
+                return Center(child: CircularProgressIndicator());
+              }
+            }));
   }
 }
