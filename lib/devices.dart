@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project_app/home.dart';
+import 'package:flutter_project_app/main.dart';
+import 'package:provider/provider.dart';
 
 class Devices extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userPlatform = Provider.of<UserPlatform>(context);
+
     return MaterialApp(
       title: 'Devices',
       home: Scaffold(
@@ -34,13 +38,16 @@ class Devices extends StatelessWidget {
                   children: [
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const MyHomePage(
-                              title: "Games",
+                        onTap: () => {
+                          userPlatform.switchPlatform("Desktop", 4),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const MyHomePage(
+                                title: "Games",
+                              ),
                             ),
                           ),
-                        ),
+                        },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -69,13 +76,16 @@ class Devices extends StatelessWidget {
                     SizedBox(width: 20),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const MyHomePage(
-                              title: "Games",
+                        onTap: () => {
+                          userPlatform.switchPlatform("Mobile", 21),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const MyHomePage(
+                                title: "Games",
+                              ),
                             ),
-                          ),
-                        ),
+                          )
+                        },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -111,18 +121,21 @@ class Devices extends StatelessWidget {
                   children: [
                     Expanded(
                         child: GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const MyHomePage(
-                            title: "Games",
+                      onTap: () => {
+                        userPlatform.switchPlatform("Portable", 7),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const MyHomePage(
+                              title: "Games",
+                            ),
                           ),
-                        ),
-                      ),
+                        )
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                           image: DecorationImage(
-                            image: AssetImage('assets/images/vr.jpg'),
+                            image: AssetImage('assets/images/portable.jpg'),
                             fit: BoxFit.cover,
                             colorFilter: ColorFilter.mode(
                                 Colors.black.withOpacity(0.4),
@@ -132,7 +145,7 @@ class Devices extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'VR',
+                            'Portable ',
                             style: TextStyle(
                               fontSize: 24,
                               color: Colors.white,
@@ -146,13 +159,16 @@ class Devices extends StatelessWidget {
                     SizedBox(width: 20),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const MyHomePage(
-                              title: "Games",
+                        onTap: () => {
+                          userPlatform.switchPlatform("Console", 18),
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const MyHomePage(
+                                title: "Games",
+                              ),
                             ),
-                          ),
-                        ),
+                          )
+                        },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(15)),

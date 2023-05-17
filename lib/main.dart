@@ -3,8 +3,10 @@ import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_project_app/categories.dart';
+import 'package:flutter_project_app/games.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 void main() {
   FlutterError.onError = (details) {
@@ -24,14 +26,19 @@ void main() {
     return Scaffold(
       body: Center(
         child: Text(
-          'Oops, something went wrong!',
+          'Oops, something went wrong!!!',
           style: TextStyle(color: Colors.red),
         ),
       ),
     );
   };
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserPlatform(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -45,11 +52,31 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Montserrat',
         primarySwatch: Colors.blue,
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          },
+        ),
       ),
       routes: {
         '/': (context) => MyHomePage(title: 'Games'),
-        '/genres': (context) => CategoriesPage(title: 'Genres')
+        '/categories': (context) => CategoriesPage(title: 'Categories'),
+        '/games': (context) => GamesPage(title: 'Games', category: "none")
       },
     );
+  }
+}
+
+class UserPlatform with ChangeNotifier {
+  String _platform = "Desktop";
+  int _platform_id = 4;
+
+  String get platform => _platform;
+  int get platform_id => _platform_id;
+
+  void switchPlatform(new_platform, new_platform_id) {
+    _platform = new_platform;
+    _platform_id = new_platform_id;
+    notifyListeners();
   }
 }

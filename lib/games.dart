@@ -1,6 +1,6 @@
 import 'package:blur/blur.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project_app/games.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,50 +8,71 @@ import 'dart:developer';
 import 'dart:ui';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'dart:math';
+import 'categories.dart';
+import 'game.dart';
+import 'package:provider/provider.dart';
+import 'main.dart';
 
-class CategoryResponse {
+class GamesResponse {
   final int count;
 
   final List<dynamic> results;
 
-  const CategoryResponse({
+  const GamesResponse({
     required this.count,
     required this.results,
   });
 
-  factory CategoryResponse.fromJson(Map<String, dynamic> json) {
-    return CategoryResponse(
+  factory GamesResponse.fromJson(Map<String, dynamic> json) {
+    return GamesResponse(
       count: json['count'],
       results: json['results'],
     );
   }
 }
 
-class Category {
+class Game {
   final int id;
-  final String name;
   final String slug;
-  final int games_count;
-  final String image_background;
+  final String name;
+  final String name_original;
   final String description;
+  final int metacritic;
+  final String released;
+  final bool tba;
+  final String updated;
+  final String background_image;
+  final String background_image_additional;
+  final String website;
+  final double rating;
+  final int playtime;
 
-  const Category({
+  const Game({
     required this.id,
-    required this.name,
     required this.slug,
-    required this.games_count,
-    required this.image_background,
+    required this.name,
+    required this.name_original,
     required this.description,
+    required this.metacritic,
+    required this.released,
+    required this.tba,
+    required this.updated,
+    required this.background_image,
+    required this.background_image_additional,
+    required this.website,
+    required this.rating,
+    required this.playtime,
   });
 }
 
-class CategoriesPage extends StatefulWidget {
-  const CategoriesPage({super.key, required this.title});
+class GamesPage extends StatefulWidget {
+  const GamesPage({super.key, required this.title, required this.category});
 
   final String title;
+  final String category;
 
   @override
-  State<CategoriesPage> createState() => _CategoriesPageState();
+  State<GamesPage> createState() => _GamesPageState();
 }
 
 Color getRandomColor() {
@@ -64,17 +85,34 @@ Color getRandomColor() {
   );
 }
 
-class _CategoriesPageState extends State<CategoriesPage>
+Color getColorFromRating(double rating) {
+  if (rating < 2.0) {
+    return Colors.red;
+  } else if (rating < 4.0) {
+    return Colors.orange;
+  } else {
+    return Colors.green;
+  }
+}
+
+class _GamesPageState extends State<GamesPage>
     with SingleTickerProviderStateMixin {
-  Future<CategoryResponse> fetchCategory() async {
-    final response = await http.get(Uri.parse(
-        'https://api.rawg.io/api/genres?key=6c8d73cb5f7247d099a197b7f589d25f&page=1&page_size=10'));
+  Future<GamesResponse> fetchGames(category, platform_id) async {
+    var url =
+        'https://api.rawg.io/api/games?key=6c8d73cb5f7247d099a197b7f589d25f';
+    url += "&page=1&page_size=10";
+
+    if (category != 'none') {
+      url += '&genres=' + category;
+    }
+
+    url += "&platforms=" + platform_id.toString();
+
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      final category_response =
-          CategoryResponse.fromJson(jsonDecode(response.body));
-      // log(category_response.results.toString());
-      return category_response;
+      final games_response = GamesResponse.fromJson(jsonDecode(response.body));
+      return games_response;
     } else {
       throw Exception('Failed to load categories');
     }
@@ -84,12 +122,9 @@ class _CategoriesPageState extends State<CategoriesPage>
   late AnimationController controller;
   late final Animation<AlignmentGeometry> alignAnimation;
 
-  late Future<CategoryResponse> futureCategories;
-
   @override
   void initState() {
     super.initState();
-    futureCategories = fetchCategory();
 
     controller = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -117,6 +152,8 @@ class _CategoriesPageState extends State<CategoriesPage>
 
   @override
   Widget build(BuildContext context) {
+    final userPlatform = Provider.of<UserPlatform>(context);
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -163,29 +200,29 @@ class _CategoriesPageState extends State<CategoriesPage>
               ListTile(
                 leading: const Icon(
                   Icons.gamepad,
-                  color: Colors.white,
+                  color: Colors.grey,
                 ),
                 title: const Text('Categories',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
+                onTap: () {
+                  Navigator.pushNamed(context, "/categories");
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.videogame_asset,
+                  color: Colors.white,
+                ),
+                title: const Text('Games',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 onTap: () {
                   Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.videogame_asset,
-                  color: Colors.grey,
-                ),
-                title: const Text('Games',
-                    style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                onTap: () {
-                  Navigator.pushNamed(context, "/games");
                 },
               ),
               // ListTile(
@@ -227,8 +264,8 @@ class _CategoriesPageState extends State<CategoriesPage>
             ],
           ),
         )),
-        body: FutureBuilder<CategoryResponse>(
-            future: fetchCategory(),
+        body: FutureBuilder<GamesResponse>(
+            future: fetchGames(widget.category, userPlatform.platform_id),
             builder: (context, snapshot) {
               try {
                 var rand_color = getRandomColor();
@@ -248,21 +285,18 @@ class _CategoriesPageState extends State<CategoriesPage>
                                   onTap: () {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => GamesPage(
+                                        builder: (context) => GamePage(
                                           title: snapshot.data!.results[index]
-                                                  ['name'] +
-                                              " games",
-                                          category: snapshot
-                                              .data!.results[index]['name']
-                                              .toString()
-                                              .toLowerCase(),
+                                              ['name'],
+                                          id: snapshot.data!.results[index]
+                                              ['id'],
                                         ),
                                       ),
                                     );
                                   },
                                   borderRadius: BorderRadius.circular(25),
                                   child: Container(
-                                      width: 380,
+                                      width: 150,
                                       height: 150,
                                       decoration: BoxDecoration(
                                         gradient: LinearGradient(
@@ -280,30 +314,92 @@ class _CategoriesPageState extends State<CategoriesPage>
                                             Clip.antiAliasWithSaveLayer,
                                         child: Image.network(
                                           snapshot.data!.results[index]
-                                              ['image_background'],
+                                              ['background_image'],
                                           fit: BoxFit.cover,
                                         ),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
                                       )).blurred(
                                       blur: 0.5,
                                       blurColor: rand_color,
                                       colorOpacity: 0.1,
                                       borderRadius: BorderRadius.circular(25),
                                       overlay: Align(
-                                        alignment: Alignment.bottomCenter,
+                                        alignment: Alignment.centerLeft,
                                         child: Padding(
-                                          padding: EdgeInsets.only(bottom: 12),
-                                          child: Text(
-                                              snapshot.data!.results[index]
-                                                  ['name'],
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w600,
-                                              )),
+                                          padding: EdgeInsets.only(left: 160),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              SizedBox(height: 20),
+                                              Text(
+                                                  snapshot.data!.results[index]
+                                                      ['name'],
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w600,
+                                                  )),
+                                              SizedBox(height: 10),
+                                              ListView.builder(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                itemCount: min(
+                                                    max(
+                                                        1,
+                                                        snapshot
+                                                            .data!
+                                                            .results[index]
+                                                                ['genres']
+                                                            .length),
+                                                    2),
+                                                itemBuilder:
+                                                    (context, subIndex) {
+                                                  return Text(
+                                                      snapshot.data!.results[
+                                                              index]['genres']
+                                                          [subIndex]['name'],
+                                                      style: TextStyle(
+                                                          color: Colors.grey,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 13));
+                                                },
+                                              ),
+                                              SizedBox(height: 10),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.star,
+                                                    color: getColorFromRating(
+                                                        snapshot.data!
+                                                                .results[index]
+                                                            ['rating']),
+                                                  ),
+                                                  SizedBox(width: 2),
+                                                  Text(
+                                                      snapshot
+                                                          .data!
+                                                          .results[index]
+                                                              ['rating']
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        color: getColorFromRating(
+                                                            snapshot.data!
+                                                                        .results[
+                                                                    index]
+                                                                ['rating']),
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      )),
+                                                ],
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       )),
                                 ),
