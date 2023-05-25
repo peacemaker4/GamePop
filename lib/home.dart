@@ -156,6 +156,20 @@ class _MyHomePageState extends State<MyHomePage>
                   Navigator.pushNamed(context, "/games");
                 },
               ),
+              ListTile(
+                leading: const Icon(
+                  Icons.videogame_asset,
+                  color: Colors.grey,
+                ),
+                title: const Text('Sign Up',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
+                onTap: () {
+                  Navigator.pushNamed(context, "/auth");
+                },
+              ),
               // ListTile(
               //   leading: const Icon(
               //     Icons.bookmark,

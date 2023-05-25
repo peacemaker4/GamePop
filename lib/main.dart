@@ -1,12 +1,16 @@
 import 'dart:io';
 import 'package:blur/blur.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_project_app/categories.dart';
 import 'package:flutter_project_app/games.dart';
+import 'package:flutter_project_app/auth.dart';
+import 'package:flutter_project_app/services/firebase_auth_methods.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
 
 void main() {
   FlutterError.onError = (details) {
@@ -47,23 +51,36 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        fontFamily: 'Montserrat',
-        primarySwatch: Colors.blue,
-        pageTransitionsTheme: PageTransitionsTheme(
-          builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          },
+    return MultiProvider(
+      providers: [
+        Provider<FirebaseAuthMethods>(
+          create: (_) => FirebaseAuthMethods(FirebaseAuth.instance),
         ),
-      ),
-      routes: {
-        '/': (context) => MyHomePage(title: 'Games'),
-        '/categories': (context) => CategoriesPage(title: 'Categories'),
-        '/games': (context) => GamesPage(title: 'Games', category: "none")
-      },
+        StreamProvider(
+          create: (context) => context.read<FirebaseAuthMethods>().authState,
+          initialData: null,
+        ),
+      ],
+      child: MaterialApp(
+    title: 'Flutter Demo',
+    theme: ThemeData(
+    fontFamily: 'Montserrat',
+    primarySwatch: Colors.blue,
+    pageTransitionsTheme: PageTransitionsTheme(
+    builders: {
+    TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+    },
+    ),
+    ),
+    routes: {
+    '/': (context) => MyHomePage(title: 'Games'),
+    '/categories': (context) => CategoriesPage(title: 'Categories'),
+    '/games': (context) => GamesPage(title: 'Games', category: "none"),
+    '/auth': (context) => EmailPasswordSignup()
+    },
+    ),
     );
+
   }
 }
 
