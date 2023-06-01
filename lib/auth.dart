@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_project_app/services/firebase_auth_methods.dart';
 import 'package:flutter_project_app/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,10 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
       password: passwordController.text,
       context: context,
     );
+
+  }
+  void navigateToSignInPage() {
+    Navigator.pushNamed(context, '/login'); // Replace '/auth' with your actual route name for the sign-up page
   }
 
   @override
@@ -65,6 +71,13 @@ class _EmailPasswordSignupState extends State<EmailPasswordSignup> {
             child: const Text(
               "Sign Up",
               style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ),
+          TextButton(
+            onPressed: navigateToSignInPage,
+            child: const Text(
+              "Sign In",
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ],

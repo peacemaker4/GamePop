@@ -1,18 +1,27 @@
 import 'dart:io';
 import 'package:blur/blur.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_project_app/categories.dart';
 import 'package:flutter_project_app/games.dart';
 import 'package:flutter_project_app/auth.dart';
+import 'package:flutter_project_app/profile.dart';
 import 'package:flutter_project_app/services/firebase_auth_methods.dart';
+import 'firebase_options.dart';
 import 'home.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import 'login.dart';
 
-void main() {
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   FlutterError.onError = (details) {
     // Handle errors caught by Flutter
     FlutterError.presentError(details); // Print the error to the console
@@ -76,7 +85,9 @@ class MyApp extends StatelessWidget {
     '/': (context) => MyHomePage(title: 'Games'),
     '/categories': (context) => CategoriesPage(title: 'Categories'),
     '/games': (context) => GamesPage(title: 'Games', category: "none"),
-    '/auth': (context) => EmailPasswordSignup()
+    '/auth': (context) => EmailPasswordSignup(),
+      '/login': (context) => EmailPasswordLogin(),
+      '/profile': (context) => ProfilePage()
     },
     ),
     );

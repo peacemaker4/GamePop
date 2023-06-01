@@ -158,16 +158,30 @@ class _MyHomePageState extends State<MyHomePage>
               ),
               ListTile(
                 leading: const Icon(
-                  Icons.videogame_asset,
+                  Icons.login,
                   color: Colors.grey,
                 ),
-                title: const Text('Sign Up',
+                title: const Text('Sign In',
                     style: TextStyle(
                         color: Colors.grey,
                         fontSize: 16,
                         fontWeight: FontWeight.w600)),
                 onTap: () {
-                  Navigator.pushNamed(context, "/auth");
+                  Navigator.pushNamed(context, "/login");
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.person,
+                  color: Colors.grey,
+                ),
+                title: const Text('Profile',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
+                onTap: () {
+                  Navigator.pushNamed(context, "/profile");
                 },
               ),
               // ListTile(
